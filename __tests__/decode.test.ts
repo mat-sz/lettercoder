@@ -45,5 +45,10 @@ describe('letterparser', () => {
     expect(decodeMimeWords('=?ISO-8859-1?Q?a?=\n =?ISO-8859-1?Q?b?=')).toBe(
       'ab'
     );
+    expect(
+      decodeMimeWords(
+        '=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?='
+      )
+    ).toBe('If you can read this you understand the example.');
   });
 });
