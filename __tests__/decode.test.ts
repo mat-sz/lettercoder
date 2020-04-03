@@ -35,4 +35,15 @@ describe('letterparser', () => {
       )
     ).toBe("Now's the time for all folk to come to the aid of their country.");
   });
+
+  it('handles multiple mime words properly', () => {
+    expect(decodeMimeWords('=?ISO-8859-1?Q?a?= b')).toBe('a b');
+    expect(decodeMimeWords('=?ISO-8859-1?Q?a?= =?ISO-8859-1?Q?b?=')).toBe('ab');
+    expect(decodeMimeWords('=?ISO-8859-1?Q?a?=  =?ISO-8859-1?Q?b?=')).toBe(
+      'ab'
+    );
+    expect(decodeMimeWords('=?ISO-8859-1?Q?a?=\n =?ISO-8859-1?Q?b?=')).toBe(
+      'ab'
+    );
+  });
 });

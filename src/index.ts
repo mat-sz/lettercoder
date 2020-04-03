@@ -10,10 +10,31 @@ if (typeof TextDecoder === 'undefined') {
  * @param input
  */
 export function decodeMimeWords(input: string) {
-  return input
-    .split(' ')
-    .map(word => decodeMimeWord(word))
-    .join(' ');
+  const atoms = input.replace(/\s+/g, ' ').split(' ');
+  let output = '';
+  for (let atom of atoms) {
+    if (isMimeWord(atom)) {
+      output += decodeMimeWord(atom);
+    } else if (output !== '' && !output.endsWith(' ')) {
+      output += ' ' + atom;
+    }
+  }
+
+  return output.trim();
+}
+
+export function isMimeWord(input: string) {
+  if (!input.startsWith('=?') || !input.endsWith('?=') || input.includes(' ')) {
+    return false;
+  }
+
+  const split = input.split('?');
+  if (split.length !== 5) {
+    return false;
+  }
+
+  const type = split[2].toLowerCase();
+  return type === 'q' || type === 'b';
 }
 
 /**
@@ -21,16 +42,11 @@ export function decodeMimeWords(input: string) {
  * @param input
  */
 export function decodeMimeWord(input: string) {
-  if (!input.startsWith('=?') || !input.endsWith('?=') || input.includes(' ')) {
+  if (!isMimeWord(input)) {
     return input;
   }
 
-  const split = input.split('?');
-  if (split.length !== 5) {
-    return input;
-  }
-
-  let [encoding, type, value] = split.slice(1, 4);
+  let [encoding, type, value] = input.split('?').slice(1, 4);
 
   // Remove language tag.
   encoding = encoding.split('*')[0].toLowerCase();
