@@ -1,6 +1,6 @@
 import { toByteArray } from 'base64-js';
 
-if (!TextDecoder) {
+if (typeof TextDecoder === 'undefined') {
   // @ts-ignore Isomorphism.
   global['TextDecoder'] = require('util').TextDecoder;
 }
@@ -46,7 +46,7 @@ export function decodeMimeWord(input: string) {
         return input;
       }
     case 'q':
-      return decodeQuotedPrintable(value);
+      return decodeQuotedPrintable(value, true);
     default:
       return input;
   }
@@ -56,16 +56,24 @@ export function decodeMimeWord(input: string) {
  * Decodes Quoted-Printable (RFC 2045) strings.
  * @param input
  */
-export function decodeQuotedPrintable(input: string) {
+export function decodeQuotedPrintable(input: string, ignoreLines = false) {
   const lines = input.replace(/\r/g, '').split('\n');
   let tempStr = '';
   let output = '';
 
-  for (let line of lines) {
-    if (line.endsWith('=')) {
-      tempStr += line.substring(0, line.length - 1);
-    } else {
-      tempStr += line + '\n';
+  if (ignoreLines) {
+    tempStr = input;
+  } else {
+    for (let line of lines) {
+      if (line.endsWith('=')) {
+        tempStr += line.substring(0, line.length - 1);
+      } else {
+        tempStr += line + '\n';
+      }
+    }
+
+    if (tempStr.endsWith('\n')) {
+      tempStr = tempStr.substring(0, tempStr.length - 1);
     }
   }
 
