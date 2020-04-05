@@ -75,7 +75,7 @@ export function decodeMimeWord(input: string) {
         return input;
       }
     case 'q':
-      return decodeQuotedPrintable(value);
+      return decodeQuotedPrintable(value, encoding);
     default:
       return input;
   }
@@ -85,10 +85,9 @@ export function decodeMimeWord(input: string) {
  * Decodes Quoted-Printable (RFC 2045) strings.
  * @param input
  */
-export function decodeQuotedPrintable(input: string) {
+export function decodeQuotedPrintable(input: string, encoding?: string) {
   const lines = input.replace(/\r/g, '').split('\n');
   let tempStr = '';
-  let output = '';
 
   for (let line of lines) {
     if (line.endsWith('=')) {
@@ -102,25 +101,33 @@ export function decodeQuotedPrintable(input: string) {
     tempStr = tempStr.substring(0, tempStr.length - 1);
   }
 
+  const bytes: number[] = [];
+  const space = ' '.charCodeAt(0);
   for (let i = 0; i < tempStr.length; i++) {
     const char = tempStr.charAt(i);
     switch (char) {
       case '=':
         const hex = parseInt(tempStr.charAt(i + 1) + tempStr.charAt(i + 2), 16);
         if (hex) {
-          output += String.fromCharCode(hex);
+          bytes.push(hex);
           i += 2;
         } else {
-          output += char;
+          bytes.push(tempStr.charCodeAt(i));
         }
         break;
       case '_':
-        output += ' ';
+        bytes.push(space);
         break;
       default:
-        output += char;
+        bytes.push(tempStr.charCodeAt(i));
     }
   }
 
-  return output;
+  const typedArray = Uint8Array.from(bytes);
+  if (encoding) {
+    const decoder = new TextDecoder(encoding);
+    return decoder.decode(typedArray);
+  } else {
+    return typedArray;
+  }
 }

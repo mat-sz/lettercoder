@@ -31,7 +31,8 @@ describe('letterparser', () => {
   it('decodes Quoted-Printable examples from RFC 2045', () => {
     expect(
       decodeQuotedPrintable(
-        "Now's the time =\nfor all folk to come=\n to the aid of their country."
+        "Now's the time =\nfor all folk to come=\n to the aid of their country.",
+        'utf-8'
       )
     ).toBe("Now's the time for all folk to come to the aid of their country.");
   });
