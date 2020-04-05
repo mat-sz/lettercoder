@@ -45,6 +45,8 @@ describe('letterparser', () => {
       "J'interdis aux marchands de vanter trop leurs marchandises. Car ils se font vite pédagogues et t'enseignent comme but ce qui n'est par essence qu'un moyen, et te trompant ainsi sur la route à suivre les voilà bientôt qui te dégradent, car si leur musique est vulgaire ils te fabriquent pour te la vendre une âme vulgaire."
     );
 
+    expect(decodeQuotedPrintable('=F0=9F=91=8D', 'utf-8')).toBe('👍');
+
     expect(decodeQuotedPrintable('=DE=AD=BE=EF')).toEqual(
       Uint8Array.from([0xde, 0xad, 0xbe, 0xef])
     );
