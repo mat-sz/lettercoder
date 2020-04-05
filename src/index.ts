@@ -12,11 +12,24 @@ if (typeof TextDecoder === 'undefined') {
 export function decodeMimeWords(input: string) {
   const atoms = input.replace(/\s+/g, ' ').split(' ');
   let output = '';
+  let wasMimeWord = false;
+
   for (let atom of atoms) {
     if (isMimeWord(atom)) {
+      if (!wasMimeWord && output !== '') {
+        output += ' ';
+      }
       output += decodeMimeWord(atom);
-    } else if (output !== '' && !output.endsWith(' ')) {
-      output += ' ' + atom;
+
+      wasMimeWord = true;
+    } else {
+      if (output !== '') {
+        output += ' ' + atom.trim();
+      } else {
+        output += atom.trim();
+      }
+
+      wasMimeWord = false;
     }
   }
 

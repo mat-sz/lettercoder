@@ -38,6 +38,7 @@ describe('letterparser', () => {
 
   it('handles multiple mime words properly', () => {
     expect(decodeMimeWords('=?ISO-8859-1?Q?a?= b')).toBe('a b');
+    expect(decodeMimeWords('a =?ISO-8859-1?Q?a?= b')).toBe('a a b');
     expect(decodeMimeWords('=?ISO-8859-1?Q?a?= =?ISO-8859-1?Q?b?=')).toBe('ab');
     expect(decodeMimeWords('=?ISO-8859-1?Q?a?=  =?ISO-8859-1?Q?b?=')).toBe(
       'ab'
@@ -50,5 +51,11 @@ describe('letterparser', () => {
         '=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?='
       )
     ).toBe('If you can read this you understand the example.');
+  });
+
+  it('handles the lack of mime words properly', () => {
+    expect(decodeMimeWords('a b')).toBe('a b');
+    expect(decodeMimeWords('a@b.com')).toBe('a@b.com');
+    expect(decodeMimeWords('text/plain')).toBe('text/plain');
   });
 });
