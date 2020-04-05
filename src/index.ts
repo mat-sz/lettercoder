@@ -75,7 +75,7 @@ export function decodeMimeWord(input: string) {
         return input;
       }
     case 'q':
-      return decodeQuotedPrintable(value, true);
+      return decodeQuotedPrintable(value);
     default:
       return input;
   }
@@ -85,25 +85,21 @@ export function decodeMimeWord(input: string) {
  * Decodes Quoted-Printable (RFC 2045) strings.
  * @param input
  */
-export function decodeQuotedPrintable(input: string, ignoreLines = false) {
+export function decodeQuotedPrintable(input: string) {
   const lines = input.replace(/\r/g, '').split('\n');
   let tempStr = '';
   let output = '';
 
-  if (ignoreLines) {
-    tempStr = input;
-  } else {
-    for (let line of lines) {
-      if (line.endsWith('=')) {
-        tempStr += line.substring(0, line.length - 1);
-      } else {
-        tempStr += line + '\n';
-      }
+  for (let line of lines) {
+    if (line.endsWith('=')) {
+      tempStr += line.substring(0, line.length - 1);
+    } else {
+      tempStr += line + '\n';
     }
+  }
 
-    if (tempStr.endsWith('\n')) {
-      tempStr = tempStr.substring(0, tempStr.length - 1);
-    }
+  if (tempStr.endsWith('\n')) {
+    tempStr = tempStr.substring(0, tempStr.length - 1);
   }
 
   for (let i = 0; i < tempStr.length; i++) {
