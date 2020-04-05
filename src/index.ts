@@ -84,6 +84,7 @@ export function decodeMimeWord(input: string) {
 /**
  * Decodes Quoted-Printable (RFC 2045) strings.
  * @param input
+ * @param encoding Encoding of the input, omit the argument for the function to return an UInt8Array.
  */
 export function decodeQuotedPrintable(input: string, encoding?: string) {
   const lines = input.replace(/\r/g, '').split('\n');
