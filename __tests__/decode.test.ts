@@ -28,13 +28,26 @@ describe('letterparser', () => {
     );
   });
 
-  it('decodes Quoted-Printable examples from RFC 2045', () => {
+  it('decodes Quoted-Printable', () => {
     expect(
       decodeQuotedPrintable(
         "Now's the time =\nfor all folk to come=\n to the aid of their country.",
         'utf-8'
       )
     ).toBe("Now's the time for all folk to come to the aid of their country.");
+
+    expect(
+      decodeQuotedPrintable(
+        "J'interdis aux marchands de vanter trop leurs marchandises. Car ils se font =\nvite p=C3=A9dagogues et t'enseignent comme but ce qui n'est par essence qu'=\nun moyen, et te trompant ainsi sur la route =C3=A0 suivre les voil=C3=A0 bi=\nent=C3=B4t qui te d=C3=A9gradent, car si leur musique est vulgaire ils te f=\nabriquent pour te la vendre une =C3=A2me vulgaire.",
+        'utf-8'
+      )
+    ).toBe(
+      "J'interdis aux marchands de vanter trop leurs marchandises. Car ils se font vite pédagogues et t'enseignent comme but ce qui n'est par essence qu'un moyen, et te trompant ainsi sur la route à suivre les voilà bientôt qui te dégradent, car si leur musique est vulgaire ils te fabriquent pour te la vendre une âme vulgaire."
+    );
+
+    expect(decodeQuotedPrintable('=DE=AD=BE=EF')).toEqual(
+      Uint8Array.from([0xde, 0xad, 0xbe, 0xef])
+    );
   });
 
   it('handles multiple mime words properly', () => {
