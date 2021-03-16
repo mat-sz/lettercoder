@@ -1,6 +1,6 @@
 {
   "name": "lettercoder",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Quoted-printable (RFC 2045) and mime word (RFC 2047) decoding",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
