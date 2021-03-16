@@ -50,6 +50,8 @@ describe('letterparser', () => {
     expect(decodeQuotedPrintable('=DE=AD=BE=EF')).toEqual(
       Uint8Array.from([0xde, 0xad, 0xbe, 0xef])
     );
+
+    expect(decodeQuotedPrintable('____', 'utf-8')).toBe('____');
   });
 
   it('handles multiple mime words properly', () => {
@@ -67,6 +69,8 @@ describe('letterparser', () => {
         '=?ISO-8859-1?B?SWYgeW91IGNhbiByZWFkIHRoaXMgeW8=?= =?ISO-8859-2?B?dSB1bmRlcnN0YW5kIHRoZSBleGFtcGxlLg==?='
       )
     ).toBe('If you can read this you understand the example.');
+
+    expect(decodeMimeWords('=?ISO-8859-1?Q?a_b_c?= b')).toBe('a b c b');
   });
 
   it('handles the lack of mime words properly', () => {

@@ -5,6 +5,56 @@ if (typeof TextDecoder === 'undefined') {
   global['TextDecoder'] = require('util').TextDecoder;
 }
 
+const CHAR_SPACE = 0x20;
+
+function decodeQAndQP(input: string, encoding?: string, isQ = false) {
+  const lines = input.replace(/\r/g, '').split('\n');
+  let tempStr = '';
+
+  for (let line of lines) {
+    if (line.endsWith('=')) {
+      tempStr += line.substring(0, line.length - 1);
+    } else {
+      tempStr += line + '\n';
+    }
+  }
+
+  if (tempStr.endsWith('\n')) {
+    tempStr = tempStr.substring(0, tempStr.length - 1);
+  }
+
+  const bytes: number[] = [];
+  for (let i = 0; i < tempStr.length; i++) {
+    const char = tempStr.charAt(i);
+    const charCode = tempStr.charCodeAt(i);
+
+    switch (char) {
+      case '=':
+        const hex = parseInt(tempStr.charAt(i + 1) + tempStr.charAt(i + 2), 16);
+        if (hex) {
+          bytes.push(hex);
+          i += 2;
+        } else {
+          bytes.push(charCode);
+        }
+        break;
+      case '_':
+        bytes.push(isQ ? CHAR_SPACE : charCode);
+        break;
+      default:
+        bytes.push(charCode);
+    }
+  }
+
+  const typedArray = Uint8Array.from(bytes);
+  if (encoding) {
+    const decoder = new TextDecoder(encoding);
+    return decoder.decode(typedArray);
+  } else {
+    return typedArray;
+  }
+}
+
 /**
  * Decodes strings containing multiple MIME words (RFC 2047).
  * @param input
@@ -75,7 +125,7 @@ export function decodeMimeWord(input: string) {
         return input;
       }
     case 'q':
-      return decodeQuotedPrintable(value, encoding);
+      return decodeQAndQP(value, encoding, true);
     default:
       return input;
   }
@@ -87,48 +137,5 @@ export function decodeMimeWord(input: string) {
  * @param encoding Encoding of the input, omit the argument for the function to return an UInt8Array.
  */
 export function decodeQuotedPrintable(input: string, encoding?: string) {
-  const lines = input.replace(/\r/g, '').split('\n');
-  let tempStr = '';
-
-  for (let line of lines) {
-    if (line.endsWith('=')) {
-      tempStr += line.substring(0, line.length - 1);
-    } else {
-      tempStr += line + '\n';
-    }
-  }
-
-  if (tempStr.endsWith('\n')) {
-    tempStr = tempStr.substring(0, tempStr.length - 1);
-  }
-
-  const bytes: number[] = [];
-  const space = ' '.charCodeAt(0);
-  for (let i = 0; i < tempStr.length; i++) {
-    const char = tempStr.charAt(i);
-    switch (char) {
-      case '=':
-        const hex = parseInt(tempStr.charAt(i + 1) + tempStr.charAt(i + 2), 16);
-        if (hex) {
-          bytes.push(hex);
-          i += 2;
-        } else {
-          bytes.push(tempStr.charCodeAt(i));
-        }
-        break;
-      case '_':
-        bytes.push(space);
-        break;
-      default:
-        bytes.push(tempStr.charCodeAt(i));
-    }
-  }
-
-  const typedArray = Uint8Array.from(bytes);
-  if (encoding) {
-    const decoder = new TextDecoder(encoding);
-    return decoder.decode(typedArray);
-  } else {
-    return typedArray;
-  }
+  return decodeQAndQP(input, encoding, false);
 }
