@@ -1,4 +1,15 @@
-# lettercoder
+<h1 align="center">
+  lettercoder
+</h1>
+
+<p align="center">
+<img alt="workflow" src="https://img.shields.io/github/workflow/status/mat-sz/lettercoder/Node.js%20CI%20(yarn)">
+<a href="https://npmjs.com/package/lettercoder">
+<img alt="npm" src="https://img.shields.io/npm/v/lettercoder">
+<img alt="npm" src="https://img.shields.io/npm/dw/lettercoder">
+<img alt="NPM" src="https://img.shields.io/npm/l/lettercoder">
+</a>
+</p>
 
 **lettercoder** is an isomorphic decoding library for e-mail related applications written in TypeScript.
 
