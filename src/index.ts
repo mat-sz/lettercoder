@@ -1,8 +1,16 @@
 import { toByteArray } from 'base64-js';
 
 if (typeof TextDecoder === 'undefined') {
+  const nodeVer = typeof process !== 'undefined' && process.versions?.node;
+  const nodeRequire = nodeVer
+    ? // @ts-ignore Isomorphism.
+      typeof __webpack_require__ === 'function'
+      ? // @ts-ignore Isomorphism.
+        __non_webpack_require__
+      : require
+    : undefined;
   // @ts-ignore Isomorphism.
-  global['TextDecoder'] = require('util').TextDecoder;
+  global['TextDecoder'] = nodeRequire('util').TextDecoder;
 }
 
 const CHAR_SPACE = 0x20;
