@@ -2,7 +2,7 @@ import {
   decodeQuotedPrintable,
   decodeMimeWords,
   decodeMimeWord,
-} from '../src/index';
+} from '../src/index.js';
 
 describe('letterparser', () => {
   it('decodes MIME word examples from section 8 of RFC 2047', () => {
