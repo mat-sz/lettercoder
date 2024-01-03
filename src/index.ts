@@ -3,18 +3,29 @@ import { toByteArray } from 'base64-js';
 if (typeof TextDecoder === 'undefined') {
   const nodeVer = typeof process !== 'undefined' && process.versions?.node;
   const nodeRequire = nodeVer
-    ? // @ts-ignore Isomorphism.
+    ? // @ts-expect-error Isomorphism.
       typeof __webpack_require__ === 'function'
-      ? // @ts-ignore Isomorphism.
+      ? // @ts-expect-error Isomorphism.
         __non_webpack_require__
-      : require
+      : // @ts-expect-error Isomorphism.
+        require
     : undefined;
-  // @ts-ignore Isomorphism.
-  global['TextDecoder'] = nodeRequire('util').TextDecoder;
+  globalThis['TextDecoder'] = nodeRequire('util').TextDecoder;
 }
 
 const CHAR_SPACE = 0x20;
 
+function decodeQAndQP(
+  input: string,
+  encoding?: undefined,
+  isQ?: boolean
+): Uint8Array;
+function decodeQAndQP(input: string, encoding: string, isQ?: boolean): string;
+function decodeQAndQP(
+  input: string,
+  encoding?: string | undefined,
+  isQ?: boolean
+): string | Uint8Array;
 function decodeQAndQP(input: string, encoding?: string, isQ = false) {
   const lines = input.replace(/\r/g, '').split('\n');
   let tempStr = '';
@@ -67,7 +78,7 @@ function decodeQAndQP(input: string, encoding?: string, isQ = false) {
  * Decodes strings containing multiple MIME words (RFC 2047).
  * @param input
  */
-export function decodeMimeWords(input: string) {
+export function decodeMimeWords(input: string): string {
   const atoms = input.replace(/\s+/g, ' ').split(' ');
   let output = '';
   let wasMimeWord = false;
@@ -94,7 +105,7 @@ export function decodeMimeWords(input: string) {
   return output.trim();
 }
 
-export function isMimeWord(input: string) {
+export function isMimeWord(input: string): boolean {
   if (!input.startsWith('=?') || !input.endsWith('?=') || input.includes(' ')) {
     return false;
   }
@@ -112,7 +123,7 @@ export function isMimeWord(input: string) {
  * Decodes one MIME word (RFC 2047). Note: if an input contains more than one RFC 822 atom (i.e. input contains spaces) no decoding will be performed, use decodeMimeWords instead.
  * @param input
  */
-export function decodeMimeWord(input: string) {
+export function decodeMimeWord(input: string): string {
   if (!isMimeWord(input)) {
     return input;
   }
@@ -144,6 +155,12 @@ export function decodeMimeWord(input: string) {
  * @param input
  * @param encoding Encoding of the input, omit the argument for the function to return an UInt8Array.
  */
+export function decodeQuotedPrintable(input: string): Uint8Array;
+export function decodeQuotedPrintable(input: string, encoding: string): string;
+export function decodeQuotedPrintable(
+  input: string,
+  encoding?: string | undefined
+): string | Uint8Array;
 export function decodeQuotedPrintable(input: string, encoding?: string) {
   return decodeQAndQP(input, encoding, false);
 }
