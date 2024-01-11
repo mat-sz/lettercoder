@@ -1,5 +1,3 @@
-import './globals.js';
-
 const CHAR_SPACE = 0x20;
 
 export function decodeQAndQP(

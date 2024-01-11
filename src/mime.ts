@@ -1,6 +1,5 @@
 import { toByteArray } from 'base64-js';
 import { decodeQAndQP } from './qp.js';
-import './globals.js';
 
 /**
  * Decodes strings containing multiple MIME words (RFC 2047).
